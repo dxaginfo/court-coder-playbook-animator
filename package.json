@@ -1,0 +1,34 @@
+{
+  "name": "court-coder-playbook-animator",
+  "version": "0.1.0",
+  "description": "AI-powered basketball playbook animation tool for coaches",
+  "main": "src/index.html",
+  "scripts": {
+    "start": "serve src",
+    "dev": "serve src -p 3000",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dxaginfo/court-coder-playbook-animator.git"
+  },
+  "keywords": [
+    "basketball",
+    "playbook",
+    "animation",
+    "coaching",
+    "ai",
+    "javascript"
+  ],
+  "author": "Court Coder Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dxaginfo/court-coder-playbook-animator/issues"
+  },
+  "homepage": "https://github.com/dxaginfo/court-coder-playbook-animator#readme",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "serve": "^14.2.0"
+  },
+  "dependencies": {}
+}
