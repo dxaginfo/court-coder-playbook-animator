@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Court Coder - Basketball Playbook Animator</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <meta name="description" content="AI-powered basketball playbook creation and animation tool for coaches">
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo-container">
+            <img src="assets/images/logo.svg" alt="Court Coder Logo" class="logo">
+            <h1>Court Coder</h1>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><button id="newPlay" class="nav-button">New Play</button></li>
+                <li><button id="loadPlay" class="nav-button">Load Play</button></li>
+                <li><button id="savePlay" class="nav-button">Save Play</button></li>
+                <li><button id="exportPlay" class="nav-button">Export</button></li>
+                <li><button id="helpButton" class="nav-button">Help</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="app-container">
+        <aside class="tools-panel">
+            <div class="tool-section">
+                <h2>Court</h2>
+                <button id="fullCourt" class="tool-button">Full Court</button>
+                <button id="halfCourt" class="tool-button active">Half Court</button>
+                <select id="courtType" class="tool-select">
+                    <option value="nba">NBA</option>
+                    <option value="ncaa">NCAA</option>
+                    <option value="fiba">FIBA</option>
+                    <option value="high-school">High School</option>
+                </select>
+            </div>
+            
+            <div class="tool-section">
+                <h2>Players</h2>
+                <div class="player-tools">
+                    <div class="player-tool" data-role="pg" draggable="true">PG</div>
+                    <div class="player-tool" data-role="sg" draggable="true">SG</div>
+                    <div class="player-tool" data-role="sf" draggable="true">SF</div>
+                    <div class="player-tool" data-role="pf" draggable="true">PF</div>
+                    <div class="player-tool" data-role="c" draggable="true">C</div>
+                    <div class="player-tool defender" data-role="defender" draggable="true">D</div>
+                    <div class="player-tool ball" data-role="ball" draggable="true">🏀</div>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <h2>Drawing Tools</h2>
+                <button id="moveTool" class="tool-button active">
+                    <span class="tool-icon">↖</span> Move
+                </button>
+                <button id="pathTool" class="tool-button">
+                    <span class="tool-icon">→</span> Path
+                </button>
+                <button id="eraseTool" class="tool-button">
+                    <span class="tool-icon">🗑</span> Erase
+                </button>
+                <button id="clearAll" class="tool-button danger">
+                    Clear All
+                </button>
+            </div>
+            
+            <div class="tool-section">
+                <h2>AI Enhancement</h2>
+                <textarea id="playDescription" placeholder="Describe the play (e.g., 'Pick and roll with the center, leading to a corner three by the shooting guard')"></textarea>
+                <button id="enhancePlay" class="tool-button primary">
+                    <span class="tool-icon">✨</span> Enhance Play
+                </button>
+            </div>
+        </aside>
+        
+        <section class="court-container">
+            <div class="animation-controls">
+                <button id="playAnimation" class="control-button">
+                    <span class="control-icon">▶</span>
+                </button>
+                <button id="pauseAnimation" class="control-button" disabled>
+                    <span class="control-icon">⏸</span>
+                </button>
+                <button id="resetAnimation" class="control-button">
+                    <span class="control-icon">⟲</span>
+                </button>
+                <div class="playback-speed">
+                    <label for="speedControl">Speed:</label>
+                    <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+                    <span id="speedValue">1.0x</span>
+                </div>
+            </div>
+            
+            <canvas id="courtCanvas" width="800" height="600"></canvas>
+            
+            <div class="timeline-container">
+                <div class="timeline-track">
+                    <div class="timeline-scrubber"></div>
+                </div>
+                <div class="timeline-markers">
+                    <span class="marker" style="left: 0%;">0s</span>
+                    <span class="marker" style="left: 25%;">2s</span>
+                    <span class="marker" style="left: 50%;">4s</span>
+                    <span class="marker" style="left: 75%;">6s</span>
+                    <span class="marker" style="left: 100%;">8s</span>
+                </div>
+            </div>
+        </section>
+        
+        <aside class="playbook-panel">
+            <h2>Playbook</h2>
+            <div class="play-notes">
+                <h3>Play Details</h3>
+                <div class="form-group">
+                    <label for="playName">Name:</label>
+                    <input type="text" id="playName" placeholder="e.g., Wing Pick and Roll">
+                </div>
+                <div class="form-group">
+                    <label for="playCategory">Category:</label>
+                    <select id="playCategory">
+                        <option value="offense">Offense</option>
+                        <option value="defense">Defense</option>
+                        <option value="inbound">Inbound Play</option>
+                        <option value="transition">Transition</option>
+                        <option value="special">Special Play</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="playNotes">Notes:</label>
+                    <textarea id="playNotes" placeholder="Add coaching points or execution tips"></textarea>
+                </div>
+            </div>
+            
+            <div class="saved-plays">
+                <h3>Saved Plays</h3>
+                <div class="plays-list" id="playsList">
+                    <!-- Plays will be populated by JavaScript -->
+                    <div class="empty-state">
+                        <p>No plays saved yet.</p>
+                        <p>Create and save a play to see it here.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Modals -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>How to Use Court Coder</h2>
+            <div class="help-content">
+                <h3>Creating a Play</h3>
+                <ol>
+                    <li>Select court type from the options panel</li>
+                    <li>Drag player icons onto the court</li>
+                    <li>Use the path tool to draw movement paths</li>
+                    <li>Add a ball and track its movement</li>
+                    <li>Enter a description for AI enhancement</li>
+                </ol>
+                
+                <h3>Animation Controls</h3>
+                <p>Use the playback controls to view your animation. Adjust the speed slider to control timing.</p>
+                
+                <h3>Saving & Sharing</h3>
+                <p>Name your play and add notes, then save it to your playbook. Export as video or GIF to share with your team.</p>
+                
+                <h3>Keyboard Shortcuts</h3>
+                <ul class="keyboard-shortcuts">
+                    <li><kbd>Space</kbd> - Play/Pause animation</li>
+                    <li><kbd>R</kbd> - Reset animation</li>
+                    <li><kbd>M</kbd> - Move tool</li>
+                    <li><kbd>P</kbd> - Path tool</li>
+                    <li><kbd>E</kbd> - Erase tool</li>
+                    <li><kbd>S</kbd> - Save play (with Ctrl/Cmd)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Export Play</h2>
+            <div class="export-options">
+                <div class="export-option">
+                    <h3>Video</h3>
+                    <p>Export as MP4 video file</p>
+                    <button id="exportVideo" class="export-button">Export Video</button>
+                </div>
+                <div class="export-option">
+                    <h3>GIF</h3>
+                    <p>Create animated GIF</p>
+                    <button id="exportGif" class="export-button">Export GIF</button>
+                </div>
+                <div class="export-option">
+                    <h3>Interactive Link</h3>
+                    <p>Generate shareable web link</p>
+                    <button id="exportLink" class="export-button">Generate Link</button>
+                    <div id="shareLink" class="share-link hidden">
+                        <input type="text" readonly>
+                        <button class="copy-link">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>
